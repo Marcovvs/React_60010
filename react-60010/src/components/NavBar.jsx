@@ -1,22 +1,29 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
 import { CartWidget } from "./CartWidget";
+import { NavLink } from 'react-router-dom';
 
 export const NavBar = () => {
     return (
-    <>
-    <Navbar bg="dark" data-bs-theme="dark">
-        <Container>
-          <Navbar.Brand href="#">BRAND</Navbar.Brand>
+    <Navbar expand="lg" className="bg-body-tertiary" data-bs-theme="dark">
+      <Container>
+        <Navbar.Brand as={NavLink} to="/">CAQAO</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="#">Productos</Nav.Link>
-            <Nav.Link href="#">Nosotros</Nav.Link>
-            <Nav.Link href="#">Contacto</Nav.Link>
+            <Nav.Link as={NavLink} to="/">Inicio</Nav.Link>
+            <NavDropdown title="Productos" id="basic-nav-dropdown">
+              <NavDropdown.Item as={NavLink} to="/category/Tabletas">Tabletas</NavDropdown.Item>
+              <NavDropdown.Divider/>
+              <NavDropdown.Item as={NavLink} to="/category/Conitos">Conitos</NavDropdown.Item>
+            </NavDropdown>
+            <Nav.Link as={NavLink} to="/">Contacto</Nav.Link>
           </Nav>
-          <CartWidget />
-        </Container>
-      </Navbar>
-    </>
+        </Navbar.Collapse>
+        <CartWidget />
+      </Container>
+    </Navbar>
     );
 };
