@@ -1,31 +1,33 @@
-import data from "../../data/data.json"
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom"
-import Container from "react-bootstrap/esm/Container";
+import { getFirestore, getDoc, doc } from "firebase/firestore";
+import { useEffect, useState, useContext } from "react";
+import { useParams } from "react-router-dom";
+import { ItemDetails } from "./ItemDetails";
+import { ItemsContext } from "../context/ItemsContext";
 
 export const ItemDetailsContainer = () => {
-    const [producto, setProducto] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [producto, setProducto] = useState({});
+  const [loading, setLoading] = useState(true);
 
-    const {id} = useParams();
-    
-useEffect (()=> {
-    new Promise((resolve) => setTimeout(() => resolve(data), 2000)).then((response) => {
-        const finded = response.find((artc) => artc.id === Number(id));
-        setProducto(finded);
-    }).finally(()=> setLoading(false));
-}, [id]);
+  const { addItem } = useContext(ItemsContext);
 
-if(loading) return "Loading...";
+  const { id } = useParams();
 
-    return (
-        <Container className="mt-4">
-            <h1 className="fw-bold">{producto.category}</h1>
-            <h2 className="text-end">{producto.nombre}</h2>
-            <img src={producto.img}/>
-            <b className="me-2">{producto.flavor}</b>
-            <b className="bg-success">${producto.precio}</b>
-            <h3 className="text-center">{producto.descripcion}</h3>
-        </Container>
-    );
-}
+  useEffect(() => {
+    const db = getFirestore();
+    const refDoc = doc(db, "items", id);
+
+    getDoc(refDoc)
+      .then((snapshot) => {
+        setProducto({ ...snapshot.data(), id: snapshot.id });
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  const onAdd = (quantity) => {
+    addItem({ ...producto, quantity });
+  };
+
+  if (loading) return "Loading...";
+
+  return <ItemDetails producto={producto} onAdd={onAdd} />;
+};
